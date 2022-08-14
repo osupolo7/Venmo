@@ -5,6 +5,10 @@ class JSONSchema:
         return TransactionParser(json=json)
 
     @staticmethod
+    def cc_transaction(json):
+        return CreditCardTransactionParser(json=json)
+
+    @staticmethod
     def user(json, is_profile=None):
         return UserParser(json=json, is_profile=is_profile)
 
@@ -24,6 +28,65 @@ class JSONSchema:
     def mention(json):
         return MentionParser(json)
 
+class CreditCardTransactionParser:
+
+    def __init__(self, json):
+        if not json:
+            return
+
+        self.json = json
+
+    def get_transaction_id(self):
+        return self.json.get(cc_transaction_json_format.get('transaction_id'))
+
+    def get_status(self):
+        return self.json.get(cc_transaction_json_format.get('status'))
+
+    def get_name(self):
+        return self.json.get(cc_transaction_json_format.get('name'))
+
+    def get_amount(self):
+        return self.json.get(cc_transaction_json_format.get('amount'))
+
+    def get_category(self):
+        return self.json.get(cc_transaction_json_format.get('ategory'))
+
+    def get_created_at(self):
+        return self.json.get(cc_transaction_json_format.get('reated_at'))
+
+    def get_transaction_type(self):
+        return self.json.get(cc_transaction_json_format.get('ransaction_type'))
+
+    def get_reference_number(self):
+        return self.json.get(cc_transaction_json_format.get('eference_number'))
+
+    def get_description(self):
+        return self.json.get(cc_transaction_json_format.get('escription'))
+
+    def get_detail_url(self):
+        return self.json.get(cc_transaction_json_format.get('etail_url'))
+
+    def get_paid_by(self):
+        return self.json.get(cc_transaction_json_format.get('aid_by'))
+
+    def get_scheduled_date(self):
+        return self.json.get(cc_transaction_json_format.get('cheduled_date'))
+
+
+cc_transaction_json_format = {
+    "transaction_id": "id",
+    "status": "status",
+    "name": "name",
+    "amount": "amount",
+    "category": "category",
+    "created_at": "created_at",
+    "transaction_type": "transaction_type",
+    "reference_number": "reference_number",
+    "description": "description",
+    "detail_url": "detail_url",
+    "paid_by": "paid_by",
+    "scheduled_date": ":scheduled_date",
+}
 
 class TransactionParser:
 
