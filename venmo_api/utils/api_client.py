@@ -10,20 +10,26 @@ class ApiClient(object):
     Generic API Client for the Venmo API
     """
 
-    def __init__(self, access_token=None):
+    def __init__(self, access_token=None, device_id=None):
         """
         :param access_token: <str> access token you received for your account.
+        :param device_id: <str> [optional] device-id the access token was issued to. Sent as the `device-id`
+                          header on every request, like the mobile app does.
         """
         super().__init__()
 
         access_token = validate_access_token(access_token=access_token)
 
         self.access_token = access_token
+        self.device_id = device_id
         self.configuration = {"host": "https://api.venmo.com/v1"}
 
-        self.default_headers = {"User-Agent": "Venmo/9.24.0 (iPhone; iOS 14.6; Scale/3.0)"}
+        self.default_headers = {"User-Agent": "Venmo/26.1.0 (iPhone; iOS 18.6.2; Scale/3.0)",
+                                "Accept": "application/json; charset=utf-8"}
         if self.access_token:
             self.default_headers.update({"Authorization": self.access_token})
+        if self.device_id:
+            self.default_headers.update({"device-id": self.device_id})
 
         self.session = requests.Session()
         self.session.headers.update(self.default_headers)

@@ -35,58 +35,77 @@ class CreditCardTransactionParser:
             return
 
         self.json = json
+        self.merchant = json.get(cc_transaction_json_format['merchant']) or {}
+        self.funding_method = json.get(cc_transaction_json_format['funding_method']) or {}
 
     def get_transaction_id(self):
-        return self.json.get(cc_transaction_json_format.get('transaction_id'))
-
-    def get_status(self):
-        return self.json.get(cc_transaction_json_format.get('status'))
-
-    def get_name(self):
-        return self.json.get(cc_transaction_json_format.get('name'))
-
-    def get_amount(self):
-        return self.json.get(cc_transaction_json_format.get('amount'))
-
-    def get_category(self):
-        return self.json.get(cc_transaction_json_format.get('ategory'))
-
-    def get_created_at(self):
-        return self.json.get(cc_transaction_json_format.get('reated_at'))
-
-    def get_transaction_type(self):
-        return self.json.get(cc_transaction_json_format.get('ransaction_type'))
+        return self.json.get(cc_transaction_json_format['transaction_id'])
 
     def get_reference_number(self):
-        return self.json.get(cc_transaction_json_format.get('eference_number'))
+        return self.json.get(cc_transaction_json_format['reference_number'])
+
+    def get_status(self):
+        return self.json.get(cc_transaction_json_format['status'])
+
+    def get_amount(self):
+        return self.json.get(cc_transaction_json_format['amount'])
+
+    def get_transaction_type(self):
+        return self.json.get(cc_transaction_json_format['transaction_type'])
 
     def get_description(self):
-        return self.json.get(cc_transaction_json_format.get('escription'))
+        return self.json.get(cc_transaction_json_format['description'])
 
-    def get_detail_url(self):
-        return self.json.get(cc_transaction_json_format.get('etail_url'))
+    def get_merchant_name(self):
+        return self.merchant.get(cc_merchant_json_format['name'])
 
-    def get_paid_by(self):
-        return self.json.get(cc_transaction_json_format.get('aid_by'))
+    def get_category(self):
+        category = self.merchant.get(cc_merchant_json_format['category']) or {}
+        return category.get(cc_merchant_json_format['category_name'])
+
+    def get_created_at(self):
+        return self.json.get(cc_transaction_json_format['created_at'])
 
     def get_scheduled_date(self):
-        return self.json.get(cc_transaction_json_format.get('cheduled_date'))
+        return self.json.get(cc_transaction_json_format['scheduled_date'])
+
+    def get_paid_by(self):
+        return self.json.get(cc_transaction_json_format['paid_by'])
+
+    def get_detail_url(self):
+        return self.json.get(cc_transaction_json_format['detail_url'])
+
+    def get_is_authorized_user_transaction(self):
+        return self.funding_method.get(cc_funding_method_json_format['is_authorized_user_transaction'])
+
+    def get_authorized_user_initials(self):
+        return self.funding_method.get(cc_funding_method_json_format['authorized_user_initials'])
 
 
 cc_transaction_json_format = {
     "transaction_id": "id",
-    "status": "status",
-    "name": "name",
-    "amount": "amount",
-    "category": "category",
-    "created_at": "created_at",
-    "transaction_type": "transaction_type",
     "reference_number": "reference_number",
+    "status": "status",
+    "amount": "amount",
+    "transaction_type": "transaction_type",
     "description": "description",
-    "detail_url": "detail_url",
+    "merchant": "merchant",
+    "created_at": "created_at",
+    "scheduled_date": "scheduled_date",
     "paid_by": "paid_by",
-    "scheduled_date": ":scheduled_date",
+    "detail_url": "detail_url",
+    "funding_method": "funding_method",
 }
+cc_merchant_json_format = {
+    "name": "name",
+    "category": "category",
+    "category_name": "name",
+}
+cc_funding_method_json_format = {
+    "is_authorized_user_transaction": "is_authorized_user_transaction",
+    "authorized_user_initials": "authorized_user_initials",
+}
+
 
 class TransactionParser:
 

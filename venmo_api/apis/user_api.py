@@ -1,4 +1,4 @@
-from venmo_api import User, Page, Transaction, deserialize, wrap_callback, get_user_id
+from venmo_api import User, Page, Transaction, deserialize, wrap_callback, get_user_id, get_next_page_params
 from typing import List, Union
 
 
@@ -166,9 +166,12 @@ class UserApi(object):
         if callback:
             return
 
+        # Page by the API's cursor: it accounts for skipped non-payment stories
         return deserialize(response=response,
                            data_type=Transaction).set_method(method=self.get_user_transactions,
-                                                             kwargs={"user_id": user_id})
+                                                             kwargs={"user_id": user_id, "limit": limit},
+                                                             next_kwargs=get_next_page_params(response,
+                                                                                              ['before_id']))
 
     def get_transaction_between_two_users(self, user_id_one: str = None,
                                           user_id_two: str = None,
@@ -212,4 +215,7 @@ class UserApi(object):
         return deserialize(response=response,
                            data_type=Transaction).set_method(method=self.get_transaction_between_two_users,
                                                              kwargs={"user_id_one": user_id_one,
-                                                                             "user_id_two": user_id_two})
+                                                                     "user_id_two": user_id_two,
+                                                                     "limit": limit},
+                                                             next_kwargs=get_next_page_params(response,
+                                                                                              ['before_id']))

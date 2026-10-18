@@ -2,6 +2,7 @@ from venmo_api import ArgumentMissingError, User, Page
 from enum import Enum
 from typing import Dict, List
 import re
+from urllib.parse import urlsplit, parse_qs
 
 
 def validate_access_token(access_token):
@@ -44,6 +45,21 @@ def deserialize(response: Dict, data_type, nested_response: List[str] = None):
         return __get_objs_from_json_list(json_list=data, data_type=data_type)
 
     return data_type.from_json(json=data)
+
+
+def get_next_page_params(response: Dict, keys: List[str]) -> Dict[str, str]:
+    """
+    Extract the cursor query params of the response's pagination.next link.
+    :param response: <Dict> api_client structured response
+    :param keys: <List[str]> cursor params to keep, e.g. ['before_id']
+    :return: <Dict> the params, or an empty dict if there is no next page
+    """
+    next_url = ((response.get('body') or {}).get('pagination') or {}).get('next')
+    if not next_url:
+        return {}
+
+    query = parse_qs(urlsplit(next_url).query)
+    return {key: query[key][0] for key in keys if key in query}
 
 
 def wrap_callback(callback, data_type, nested_response: List[str] = None):

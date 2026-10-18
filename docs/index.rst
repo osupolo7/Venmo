@@ -51,8 +51,9 @@ The following is an example of initializing and working with the api client.
 
    access_token = "YOUR_ACCESS_TOKEN"
 
-   # Initialize api client using an access-token
-   client = Client(access_token=access_token)
+   # Initialize api client using an access-token.
+   # Pass the device-id the token was issued to; it is sent as the ``device-id`` header like the app does.
+   client = Client(access_token=access_token, device_id="YOUR_DEVICE_ID")
 
    # Search for users. You get a maximum of 50 results per request.
    users = client.user.search_for_users(query="Peter")
@@ -118,6 +119,24 @@ Getting a user's transactions (only the ones that are visible to you, e.g, their
    # callback is optional. Max number of transactions per request is 50.
    client.user.get_user_transactions(user_id='0000000000000000000',
                                         callback=callback)
+
+Venmo Credit Card transactions
+""""""""""""""""""""""""""""""
+
+Your own Venmo Credit Card activity, newest first (up to 500 per page). ``amount`` is in dollars and ``amount_cents`` in cents; charges are positive, credits (card payments, refunds) negative. A pending transaction gets a new ``id`` once it settles.
+
+.. code-block:: python
+
+   transactions = client.credit_card.get_transactions()
+   for transaction in transactions:
+       print(transaction.created_at, transaction.status, transaction.transaction_type,
+             transaction.amount, transaction.description, transaction.category)
+
+   # Older transactions
+   older = transactions.get_next_page()
+
+   # A single transaction
+   transaction = client.credit_card.get_transaction(transaction_id=transactions[0].id)
 
 Friends list
 """"""""""""

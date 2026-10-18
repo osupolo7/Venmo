@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from random import randint, choice
 from string import ascii_uppercase
 
@@ -16,7 +16,19 @@ def string_to_timestamp(utc):
     # This except was added for comments (on transactions) - they display the date_created down to the microsecond
     except ValueError:
         _date = datetime.strptime(utc, '%Y-%m-%dT%H:%M:%S.%f')
-    return int(_date.timestamp())
+    # Venmo timestamps are UTC; without tzinfo, .timestamp() would treat them as host-local time.
+    return int(_date.replace(tzinfo=timezone.utc).timestamp())
+
+
+def string_to_date(value):
+    """
+    Convert a Venmo date string to a date
+    :param value: String, Format "2019-02-07"
+    :return: <date> or None
+    """
+    if not value:
+        return
+    return datetime.strptime(value, '%Y-%m-%d').date()
 
 
 def get_phone_model_from_json(app_json):

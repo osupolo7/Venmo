@@ -60,10 +60,10 @@ class Transaction(BaseModel):
             return
 
         parser = JSONSchema.transaction(json)
-        transaction_type = TransactionType(parser.get_transaction_type())
 
-        # Currently only handles Payment-type transactions
-        if transaction_type is not TransactionType.PAYMENT:
+        # Currently only handles Payment-type transactions. Other story types
+        # (transfers, credit_repayment, credit_reward, ...) are skipped.
+        if parser.get_transaction_type() != TransactionType.PAYMENT.value:
             return
 
         date_created = string_to_timestamp(parser.get_date_created())
