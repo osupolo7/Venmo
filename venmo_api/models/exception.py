@@ -34,11 +34,12 @@ class HttpCodeError(Exception):
     def __init__(self, response=None, msg: str = None):
         if response is None and msg is None:
             raise Exception("Neither response nor message for creating HttpCodeError was passed.")
-        status_code = response.status_code or "NA"
-        reason = response.reason or "Unknown reason"
+        status_code = getattr(response, 'status_code', None) or "NA"
+        reason = getattr(response, 'reason', None) or "Unknown reason"
+        self.status_code = getattr(response, 'status_code', None)
         try:
             json = response.json()
-        except JSONDecodeError:
+        except (JSONDecodeError, AttributeError):
             json = "Invalid Json"
 
         self.msg = msg or f"HTTP Status code is invalid. Could not make the request because -> "\
